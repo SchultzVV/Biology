@@ -1,0 +1,6 @@
+numpy
+pickle-mixin
+torch==1.11.0
+matplotlib
+pandas
+pandas_ods_reader
