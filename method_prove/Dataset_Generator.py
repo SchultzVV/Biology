@@ -6,9 +6,22 @@ from plotly.subplots import make_subplots
 import torch.optim as optim
 import matplotlib.pyplot as plt
 import math
+import sys as s
 #%matplotlib inline
 
-
+def exponencial(t):
+    a = 10
+    b = 1
+    dump = math.exp(-b*t)
+    position = a*dump
+    return position
+X = np.linspace(0,10,100)
+#Y = exponencial(1000,1,X)
+Y = np.array(list(map(exponencial, X)))
+plt.plot(X,Y)
+plt.show()
+s.exit()
+#-------------------------------------------------------------------
 def DampedPend(b,k,t,m):
     if t == 0:
         position = 1
@@ -31,7 +44,7 @@ print(position)
 ''' preciso pensar em outra função para montar o Dataset'''
 ''' pensar no shape do output, dependendo da lógica que vamos abordar'''
 ''' o output pode ser um intervalo e a IA tem que dizer o qu'''
-
+#-------------------------------------------------------------------
 
 
 def Dataset(n_batch,batch_size,exemplos_por_batch):
@@ -84,4 +97,4 @@ def Dataset(n_batch,batch_size,exemplos_por_batch):
     address = open("Constantes","wb")
     pickle.dump(Constantes, address)
     address.close()
-Dataset(5,1000,50)
+#Dataset(5,1000,50)
