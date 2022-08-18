@@ -9,18 +9,23 @@ import math
 import sys as s
 #%matplotlib inline
 
+
+def expon(A,b,t):
+    result = A*math.exp(-b*t)
+    return result
+
+#-------------------------------------------------------------------
 def exponencial(t):
     a = 10
     b = 1
     dump = math.exp(-b*t)
     position = a*dump
     return position
-X = np.linspace(0,10,100)
+#X = np.linspace(0,10,100)
 #Y = exponencial(1000,1,X)
-Y = np.array(list(map(exponencial, X)))
-plt.plot(X,Y)
-plt.show()
-s.exit()
+#Y = np.array(list(map(exponencial, X)))
+#plt.plot(X,Y)
+#plt.show()
 #-------------------------------------------------------------------
 def DampedPend(b,k,t,m):
     if t == 0:
