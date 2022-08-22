@@ -1,105 +1,83 @@
-import random as rd;import numpy as np;import sys;import pickle
+import random as rd
+import numpy as np
+import sys
+import pickle
 import torch
 import torch.nn as nn
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import torch.optim as optim
+import sys as s
+# %matplotlib inline
+
 import matplotlib.pyplot as plt
 import math
-import sys as s
-#%matplotlib inline
 
 
-def expon(A,b,t):
-    result = A*math.exp(-b*t)
-    return result
-
-#-------------------------------------------------------------------
-def exponencial(t):
-    a = 10
-    b = 1
-    dump = math.exp(-b*t)
-    position = a*dump
-    return position
-#X = np.linspace(0,10,100)
-#Y = exponencial(1000,1,X)
-#Y = np.array(list(map(exponencial, X)))
-#plt.plot(X,Y)
-#plt.show()
-#-------------------------------------------------------------------
-def DampedPend(b,k,t,m):
-    if t == 0:
-        position = 1
+def f(x, xc):
+    if x < xc:
+        y = math.sin(x)
     else:
-        dump = math.exp(-(b/2*m)*t)
-        omega = np.sqrt(k/m)*np.sqrt(1-(b**2)/(4*m*k))
-        osc = np.cos(omega*t)
-        position = dump*osc
-    return position
-position = DampedPend(1,1,1,1)
-Y=[]
-for i in range(0,100):
-    y = DampedPend(0.1,5,i,1)
-    Y.append(y)
-X = np.linspace(0,len(Y),len(Y))
-plt.plot(X,Y)
-plt.show()
-print(position)
-
-''' preciso pensar em outra função para montar o Dataset'''
-''' pensar no shape do output, dependendo da lógica que vamos abordar'''
-''' o output pode ser um intervalo e a IA tem que dizer o qu'''
-#-------------------------------------------------------------------
+        y = math.sin(x)*math.exp(-0.025*x)
+    return y
 
 
-def Dataset(n_batch,batch_size,exemplos_por_batch):
-    inp=[];    question=[];    m=1
-    #T=[i for i in range(0,50)]
-    T=np.linspace(0, 50, num=500)
-    K=np.linspace(5, 11, num=50)
-    B=np.linspace(0.5, 1.1, num=50)
-    KK=[];    BB=[]
-#    K=np.linspace(5, 11, num=100)          #those are default values
-#    B=np.linspace(0.5,1.1, num=100)        #those are default values
-#'''         THIS IS FOR A RANDOM CONFIG OF K AND B'''
-    for i in range(n_batch):
-        t=[];        position=[];        full=0
-        while full!=batch_size:
-            ki=rd.randint(0,49);        bi=rd.randint(0,49)
-            k=K[ki];        b=B[bi]
-            KK.append(k);           BB.append(b)
-            y=[];            tpred=[]
+#xs = []
+#ys = []
+
+#for x in range(150):
+#    y = f(x, 50)
+#    xs.append(x)
+#    ys.append(y)
+#
+#plt.plot(xs, ys)
+#plt.show()
+
+
+def Dataset(n_batch, batch_size, exemplos_por_batch):
+    inp = []
+    question = []
+    XC = []
+    T = np.linspace(0, exemplos_por_batch, num=exemplos_por_batch)
+    for _ in range(n_batch):
+        t = []
+        position = []
+        full = 0
+        while full != batch_size:
+            xc = rd.randint(5, exemplos_por_batch)
+            XC.append(xc)
+            y = []
+            tpred = []
             for l in T:
-                yy=DampedPend(b,k,l,m)
+                yy = f(l, xc)
                 y.append(yy)
                 tpred.append(l)
-            plt.clf()                   #uncoment to graph
-            plt.xlim([0, 12])           #uncoment to graph
-            plt.ylim([-1, 1])           #uncoment to graph
-            plt.plot(tpred,y)           #uncoment to graph
-            plt.pause(0.5)              #uncoment to graph
-
+            plt.clf()
+            plt.xlim([0, exemplos_por_batch])
+            plt.ylim([-1, 1])
+            plt.plot(tpred, y)
+            plt.pause(0.5)
             t.append(tpred)
             position.append(y)
-            full+=1
+            full += 1
         inp.append(position)
         question.append(t)
-    KK=np.array(KK).reshape(n_batch,batch_size,1)   # To works on scynet
-    BB=np.array(BB).reshape(n_batch,batch_size,1)   # To works on scynet
-    Constantes=[KK,BB]
-    inp=torch.as_tensor(inp)
-    question=torch.as_tensor(question)
+    KK = np.array(KK).reshape(n_batch, batch_size, 1)   # To works on scynet
+    BB = np.array(BB).reshape(n_batch, batch_size, 1)   # To works on scynet
+    Constantes = [KK, BB]
+    inp = torch.as_tensor(inp)
+    question = torch.as_tensor(question)
     plt.show()
-    print('shape(question) =',np.shape(question))
-    print('Constantes =',np.shape(Constantes))
+    print('shape(question) =', np.shape(question))
+    print('Constantes =', np.shape(Constantes))
     sys.exit()
-    address = open("positions","wb")
+    address = open("positions", "wb")
     pickle.dump(inp, address)
     address.close()
-    address = open("question","wb")
+    address = open("question", "wb")
     pickle.dump(question, address)
     address.close()
-    address = open("Constantes","wb")
+    address = open("Constantes", "wb")
     pickle.dump(Constantes, address)
     address.close()
-#Dataset(5,1000,50)
+Dataset(5,1000,50)
