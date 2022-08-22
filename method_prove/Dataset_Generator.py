@@ -46,7 +46,7 @@ def Dataset(n_batch, batch_size, exemplos_por_batch):
         full = 0
         while full != batch_size:
             xc = rd.randint(10, exemplos_por_batch-10)
-            BB = rd.randint(0, exemplos_por_batch)-1
+            BB = rd.randint(0, exemplos_por_batch-1)
             b = B[BB]
             XC.append(xc)
             y = []
@@ -64,21 +64,24 @@ def Dataset(n_batch, batch_size, exemplos_por_batch):
             position.append(y)
             full += 1
         out.append(position)
+        inp.append(t)
         #question.append(t)
     #plt.show()
     XC = np.array(XC).reshape(n_batch, batch_size, 1)   # To works on scynet
-    inp = np.array(T).reshape(n_batch, batch_size, 1)
+    #inp = np.array(inp).reshape(n_batch, batch_size, exemplos_por_batch)
     inp = torch.as_tensor(inp)
+    out = torch.as_tensor(out)
     #question = torch.as_tensor(question)
     #print('shape(question) =', np.shape(question))
     print('XC =', np.shape(XC))
     print('inp =', np.shape(inp))
+    print('out =', np.shape(out))
     #sys.exit()
-    address = open("positions", "wb")
+    address = open("inp", "wb")
     pickle.dump(inp, address)
     address.close()
-    #address = open("question", "wb")
-    #pickle.dump(question, address)
+    address = open("out", "wb")
+    pickle.dump(out, address)
     address.close()
     address = open("XC", "wb")
     pickle.dump(XC, address)
