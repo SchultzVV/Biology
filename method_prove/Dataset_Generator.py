@@ -14,11 +14,11 @@ import matplotlib.pyplot as plt
 import math
 
 
-def f(x, xc):
+def f(x, b, xc):
     if x < xc:
         y = math.sin(x)
     else:
-        y = math.sin(x)*math.exp(-0.025*x)
+        y = math.sin(x)*math.exp(-b*x)
     return y
 
 
@@ -35,49 +35,53 @@ def f(x, xc):
 
 
 def Dataset(n_batch, batch_size, exemplos_por_batch):
-    inp = []
-    question = []
+    out = []
     XC = []
+    inp = []
     T = np.linspace(0, exemplos_por_batch, num=exemplos_por_batch)
+    B = np.linspace(0.02, 0.05, num=exemplos_por_batch)
     for _ in range(n_batch):
         t = []
         position = []
         full = 0
         while full != batch_size:
-            xc = rd.randint(5, exemplos_por_batch)
+            xc = rd.randint(10, exemplos_por_batch-10)
+            BB = rd.randint(0, exemplos_por_batch)-1
+            b = B[BB]
             XC.append(xc)
             y = []
             tpred = []
             for l in T:
-                yy = f(l, xc)
+                yy = f(l, b, xc)
                 y.append(yy)
                 tpred.append(l)
-            plt.clf()
-            plt.xlim([0, exemplos_por_batch])
-            plt.ylim([-1, 1])
-            plt.plot(tpred, y)
-            plt.pause(0.5)
+            #plt.clf()
+            #plt.xlim([0, exemplos_por_batch])
+            #plt.ylim([-1, 1])
+            #plt.plot(tpred, y)
+            #plt.pause(0.5)
             t.append(tpred)
             position.append(y)
             full += 1
-        inp.append(position)
-        question.append(t)
-    KK = np.array(KK).reshape(n_batch, batch_size, 1)   # To works on scynet
-    BB = np.array(BB).reshape(n_batch, batch_size, 1)   # To works on scynet
-    Constantes = [KK, BB]
+        out.append(position)
+        #question.append(t)
+    #plt.show()
+    XC = np.array(XC).reshape(n_batch, batch_size, 1)   # To works on scynet
+    inp = np.array(T).reshape(n_batch, batch_size, 1)
     inp = torch.as_tensor(inp)
-    question = torch.as_tensor(question)
-    plt.show()
-    print('shape(question) =', np.shape(question))
-    print('Constantes =', np.shape(Constantes))
-    sys.exit()
+    #question = torch.as_tensor(question)
+    #print('shape(question) =', np.shape(question))
+    print('XC =', np.shape(XC))
+    print('inp =', np.shape(inp))
+    #sys.exit()
     address = open("positions", "wb")
     pickle.dump(inp, address)
     address.close()
-    address = open("question", "wb")
-    pickle.dump(question, address)
+    #address = open("question", "wb")
+    #pickle.dump(question, address)
     address.close()
-    address = open("Constantes", "wb")
-    pickle.dump(Constantes, address)
+    address = open("XC", "wb")
+    pickle.dump(XC, address)
     address.close()
-Dataset(5,1000,50)
+#Dataset(5,10,100)
+
