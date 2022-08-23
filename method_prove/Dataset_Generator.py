@@ -74,7 +74,8 @@ def Dataset(n_batch, batch_size, exemplos_por_batch):
     #question = torch.as_tensor(question)
     #print('shape(question) =', np.shape(question))
     print('XC =', np.shape(XC))
-    print('inp =', np.shape(inp))
+    print('inp =', np.shape(inp),'{} conjunto(s)'.format(n_batch)+' de {} exemplos'.format(batch_size)+', cada um com {} pontos '.format(exemplos_por_batch))
+    
     print('out =', np.shape(out))
     #sys.exit()
     address = open("inp", "wb")
