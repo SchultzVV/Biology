@@ -45,7 +45,7 @@ def Dataset(n_batch, batch_size, exemplos_por_batch):
         position = []
         full = 0
         while full != batch_size:
-            xc = rd.randint(10, exemplos_por_batch-10)
+            xc = rd.randint(1, exemplos_por_batch-1)
             BB = rd.randint(0, exemplos_por_batch-1)
             b = B[BB]
             XC.append(xc)
