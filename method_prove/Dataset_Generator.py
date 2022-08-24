@@ -67,7 +67,7 @@ def Dataset(n_batch, batch_size, exemplos_por_batch):
         inp.append(t)
         #question.append(t)
     #plt.show()
-    XC = np.array(XC).reshape(n_batch, batch_size, 1)   # To works on scynet
+    XC = np.array(XC).reshape(n_batch, batch_size, 1)
     #inp = np.array(inp).reshape(n_batch, batch_size, exemplos_por_batch)
     inp = torch.as_tensor(inp)
     out = torch.as_tensor(out)
