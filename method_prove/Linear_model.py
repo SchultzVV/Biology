@@ -4,18 +4,18 @@ class Linear(nn.Module):
     def __init__(self):
         # N, 50
         super().__init__()
-        self.encoder = nn.Sequential(
+        self.f1 = nn.Sequential(
             nn.Linear(1, 200),
             nn.ELU(),
-            nn.Linear(200, 500),
-            nn.ELU(),
-            nn.Linear(500, 500),
-            nn.ELU(),
-            nn.Linear(500, 200),
+            nn.Linear(200, 1),
+        ) 
+        self.f2 = nn.Sequential(
+            nn.Linear(1, 200),
             nn.ELU(),
             nn.Linear(200, 1),
-            nn.ELU(),
         )        
-    def forward(self, x):
-        encoded = self.encoder(x)
-        return encoded
+    def forward(self, x, mode):
+        if mode ==1:
+            return self.f1(x)
+        if mode ==2:
+            return self.f2(x)
