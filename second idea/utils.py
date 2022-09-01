@@ -101,26 +101,6 @@ def reset_weight(model):
         model.parameters(), lr=1e-4, weight_decay=1e-5)
 
 
-def treine(model, epochs):
-    optimizer = torch.optim.Adam(
-        model.parameters(), lr=1e-4, weight_decay=1e-5)
-    inp = pickle.load(open("Input_Train", "rb"))
-    out = pickle.load(open("Train_Labels", "rb"))
-    n_batch = np.shape(inp)[0]
-    for epoch in range(epochs):
-        for batch_idx in range(n_batch):
-            O = inp[batch_idx]
-            A = out[batch_idx]
-            O = O.float()
-            A = A.float()
-            recon = model(O)
-            loss = torch.mean((recon-A)**2)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-        #print(f'Epoch:{epoch+1},Loss:{loss.item():.4f}')
-
-
 def random_predict(model):
     inp = pickle.load(open("Input_Train", "rb"))
     a = np.shape(inp)[0]-1
@@ -171,7 +151,38 @@ def Eval_metric(model, mode):
     #print('acerto = ', acerto/size)
     return erro/size, acerto/size
 
-
+def treine(model, epochs):
+    optimizer = torch.optim.Adam(
+        model.parameters(), lr=1e-4, weight_decay=1e-5)
+    inp = pickle.load(open("Input_Train", "rb"))
+    out = pickle.load(open("Train_Labels", "rb"))
+    n_batch = np.shape(inp)[0]
+    y1 = []
+    y2 = []
+    Epochs = []
+    index = 20
+    for epoch in range(epochs):
+        for batch_idx in range(n_batch):
+            O = inp[batch_idx]
+            A = out[batch_idx]
+            O = O.float()
+            A = A.float()
+            recon = model(O)
+            loss = torch.mean((recon-A)**2)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+        if index == 20:
+            Epochs.append(epoch)
+            erro, acerto = Eval_metric(model, 'test')
+            print('após {} epocas de treino, '.format(epoch),
+                'acertou {} do conjunto de teste'.format(acerto))
+            y1.append(erro)
+            y2.append(acerto)
+            index = 0
+        index +=1
+    return y1,y2,Epochs
+        #print(f'Epoch:{epoch+1},Loss:{loss.item():.4f}')
 
 
 #y1, y2, epochs = eval_model(20, 100)
