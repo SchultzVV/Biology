@@ -174,13 +174,18 @@ def treine(model, epochs):
             optimizer.step()
         if index == 20:
             Epochs.append(epoch)
-            erro, acerto = Eval_metric(model, 'test')
-            print('após {} epocas de treino, '.format(epoch),
-                'acertou {} do conjunto de teste'.format(acerto))
-            y1.append(erro)
-            y2.append(acerto)
+            erro1, acerto = Eval_metric(model, 'test')
+            #print('após {} epocas de treino, '.format(epoch),
+            #    'acertou {} do conjunto de teste'.format(acerto))
+            erro2, acerto = Eval_metric(model, 'treino')
+            #print('após {} epocas de treino, '.format(epoch),
+            #    'acertou {} do conjunto de treino'.format(acerto))
+            y1.append(erro1)
+            y2.append(erro2)
             index = 0
         index +=1
+    #print(y1)
+    #print(y2)
     return y1,y2,Epochs
         #print(f'Epoch:{epoch+1},Loss:{loss.item():.4f}')
 
