@@ -26,12 +26,12 @@ def Get_Dataset_real():  # Esse é o nome da função.
     address.close()
     return Y
 
-def gen_dataset(n_batch):
+def gen_dataset(n_batch,explanation):
     Y = Get_Dataset_real()
     Input = []
     Output = []
-    Input_test = []
-    Output_test = []
+    Input_Test = []
+    Output_Test = []
     j = 0
     for i in Y:
         if j < n_batch*5:
@@ -44,17 +44,23 @@ def gen_dataset(n_batch):
             j += 1
         else:
             y1 = i[0:30]
-            Input_test.append(y1)
-            Output_test.append(0)
+            Input_Test.append(y1)
+            Output_Test.append(0)
             y2 = i[len(i)-30:len(i)]
-            Input_test.append(y2)
-            Output_test.append(1)
-    # ---------------------- Salva o dataset com os 80 exemplos, ordenado em 4 grupos de 20
-    print(np.shape(Input))
-    print(np.shape(Output))
-    print(np.shape(Input_test))
-    print(np.shape(Output_test))
-    # s.exit()
+            Input_Test.append(y2)
+            Output_Test.append(1)
+    
+    # ---------------------- Realiza uma explicação da separação do dataset
+    if explanation == True :
+        print('Nosso dataset possui {} gráficos que representam o sinal de uma célula até completar a mitose'.format(np.shape(Y)[0]))
+        print('Cada gráfico gera dois exemplos de treino, então o nosso dataset tem tamanho {}. '.format(np.shape(Y)[0]*2))
+        print('Separando o dataset por um dado de entrada (Input) e um valor correto de saída (Output) :')
+        print('np.shape(Input) = ',np.shape(Input),': os {} primeiros gráficos de intervalo'.format(np.shape(Input)[0]),' {}.'.format(np.shape(Input)[1]))
+        print('np.shape(Output) = ',np.shape(Output),': o vetor de {} valores corretos, que segundo a organização do dataset, é composto de [0,1,0,1,...]'.format(np.shape(Output)[0]))
+        print('np.shape(Input_Test)',np.shape(Input_Test),': os últimos {} gráficos de intervalo'.format(np.shape(Input_Test)[0]),' {}.'.format(np.shape(Input_Test)[1]))
+        print('np.shape(Output_Test)',np.shape(Output_Test),': o vetor de {} valores corretos é composto de [0,1,0,1,...]'.format(np.shape(Output_Test)[0]))
+        print('Separando o dataset em grupos de 10, ou seja, batch_size = 10. O dataset fica pronto para realizar o treino')
+    # ---------------------- Salva o conjunto de treino
     Input = np.reshape(Input, (n_batch, 10, 30))
     Output = np.reshape(Output, (n_batch, 10, 1))
     Input = torch.as_tensor(Input)
@@ -65,23 +71,26 @@ def gen_dataset(n_batch):
     address = open("Train_Labels", "wb")
     pickle.dump(Output, address)
     address.close()
-    print("Input_Train", np.shape(Input))
-    print("Train_Labels", np.shape(Output))
+    if explanation == True :
+        print("Input_Train", np.shape(Input))
+        print("Train_Labels", np.shape(Output))
 
-    # ---------------------- Salva o dataset com os 8 exemplos, ordenado em 4 grupos de 2
-    Input_test = np.reshape(Input_test, (abs(9-n_batch), 10, 30))
-    Output_test = np.reshape(Output_test, (abs(9-n_batch), 10, 1))
-    Input_test = torch.as_tensor(Input_test)
-    Output_test = torch.as_tensor(Output_test)
-    address = open("Input_test", "wb")
-    pickle.dump(Input_test, address)
+    # ---------------------- Salva o conjunto de teste
+    Input_Test = np.reshape(Input_Test, (abs(9-n_batch), 10, 30))
+    Output_Test = np.reshape(Output_Test, (abs(9-n_batch), 10, 1))
+    Input_Test = torch.as_tensor(Input_Test)
+    Output_Test = torch.as_tensor(Output_Test)
+    address = open("Input_Test", "wb")
+    pickle.dump(Input_Test, address)
     address.close()
     address = open("test_Labels", "wb")
-    pickle.dump(Output_test, address)
+    pickle.dump(Output_Test, address)
     address.close()
-    print("Input_test", np.shape(Input_test))
-    print("test_Labels", np.shape(Output_test))
-    return Input, Output, Input_test, Output_test
+    if explanation == True :
+        print("Input_Test", np.shape(Input_Test))
+        print("test_Labels", np.shape(Output_Test))
+        print('Por exemplo, inp[0][0] representa os primeiros 30 pontos e inp[0][1] os últimos 30 pontos do mesmo gráfico')
+    return Input, Output, Input_Test, Output_Test
 
 
 def reset_weight(model):
@@ -109,7 +118,7 @@ def treine(model, epochs):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        print(f'Epoch:{epoch+1},Loss:{loss.item():.4f}')
+        #print(f'Epoch:{epoch+1},Loss:{loss.item():.4f}')
 
 
 def random_predict(model):
@@ -134,7 +143,7 @@ def random_predict(model):
 
 def Eval_metric(model, mode):
     if mode == 'test':
-        inp = pickle.load(open("Input_test", "rb"))
+        inp = pickle.load(open("Input_Test", "rb"))
         out = pickle.load(open("test_Labels", "rb"))
         size = np.shape(inp)[0]*np.shape(inp)[1]
         inp = inp.reshape(size, 30)
@@ -166,3 +175,24 @@ def Eval_metric(model, mode):
 
 
 #y1, y2, epochs = eval_model(20, 100)
+
+def predict(model,inp,out,n_batch, batch_idx):
+    O = inp[n_batch]
+    #y = 1*O[batch_idx]
+    #x = np.linspace(0, len(y), len(y))
+    #plt.plot(x, y)
+    #plt.show()
+    A = out[n_batch]
+    O = O.float()
+    A = A.float()
+    resposta = model(O)
+    print('---------------------------------------------')
+    #print('---------------------------------------------')
+    #print('O modelo foi criado para dar como resultado: ')
+    print('* 0 quando for a primeira metade do gráfico')
+    print('* 1 quando for a segunda metade do gráfico')
+    print('Para o exemplo de indice {}, o resultado foi'.format([n_batch,batch_idx]))
+    print('resposta do modelo = ', resposta[batch_idx].item())
+    print('resposta correta = ', A[batch_idx].item())
+    #print('---------------------------------------------')
+    print('---------------------------------------------')
