@@ -167,8 +167,8 @@ def Eval_metric(model, mode):
             acerto += 1
         else:
             erro += 1
-    print('erro = ', erro/size)
-    print('acerto = ', acerto/size)
+    #print('erro = ', erro/size)
+    #print('acerto = ', acerto/size)
     return erro/size, acerto/size
 
 
