@@ -54,7 +54,9 @@ def gen_dataset(n_batch,explanation):
     if explanation == True :
         print('Nosso dataset possui {} gráficos que representam o sinal de uma célula até completar a mitose'.format(np.shape(Y)[0]))
         print('Cada gráfico gera dois exemplos de treino, então o nosso dataset tem tamanho {}. '.format(np.shape(Y)[0]*2))
-        print('Separando o dataset por um dado de entrada (Input) e um valor correto de saída (Output) :')
+        print('Atribuimos o objetivo de obter 0 quando o gráfico for de inicio de intervalo e 1 quando for da parte final.')
+        print('--------------------------------------------------------------------------------------------------')
+        print('Montando o dataset de entrada (Input) e um valor correto(target) de saída (Output) :')
         print('np.shape(Input) = ',np.shape(Input),': os {} primeiros gráficos de intervalo'.format(np.shape(Input)[0]),' {}.'.format(np.shape(Input)[1]))
         print('np.shape(Output) = ',np.shape(Output),': o vetor de {} valores corretos, que segundo a organização do dataset, é composto de [0,1,0,1,...]'.format(np.shape(Output)[0]))
         print('np.shape(Input_Test)',np.shape(Input_Test),': os últimos {} gráficos de intervalo'.format(np.shape(Input_Test)[0]),' {}.'.format(np.shape(Input_Test)[1]))
@@ -89,7 +91,8 @@ def gen_dataset(n_batch,explanation):
     if explanation == True :
         print("Input_Test", np.shape(Input_Test))
         print("test_Labels", np.shape(Output_Test))
-        print('Por exemplo, inp[0][0] representa os primeiros 30 pontos e inp[0][1] os últimos 30 pontos do mesmo gráfico')
+        print('Por exemplo, Input_Train[0][0] representa os primeiros 30 pontos e Input_Train[0][1] os últimos 30 pontos do mesmo gráfico.')
+        print('De mesmo modo que Train_Labels[0][0] = 0 e Train_Labels[0][1] = 1.')
     return Input, Output, Input_Test, Output_Test
 
 
