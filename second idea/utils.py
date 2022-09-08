@@ -28,6 +28,7 @@ def Get_Dataset_real():  # Esse é o nome da função.
 
 def gen_dataset(n_batch,explanation):
     Y = Get_Dataset_real()
+    np.random.shuffle(Y)
     Input = []
     Output = []
     Input_Test = []
@@ -163,7 +164,7 @@ def treine(model, epochs):
     y1 = []
     y2 = []
     Epochs = []
-    index = 20
+    index = 5
     for epoch in range(epochs):
         for batch_idx in range(n_batch):
             O = inp[batch_idx]
@@ -175,16 +176,16 @@ def treine(model, epochs):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        if index == 20:
+        if index == 5:
             Epochs.append(epoch)
-            erro1, acerto = Eval_metric(model, 'test')
+            erro1, acerto_test = Eval_metric(model, 'test')
             #print('após {} epocas de treino, '.format(epoch),
             #    'acertou {} do conjunto de teste'.format(acerto))
-            erro2, acerto = Eval_metric(model, 'treino')
+            erro2, acerto_trein = Eval_metric(model, 'treino')
             #print('após {} epocas de treino, '.format(epoch),
             #    'acertou {} do conjunto de treino'.format(acerto))
-            y1.append(erro1)
-            y2.append(erro2)
+            y1.append(acerto_test)
+            y2.append(acerto_trein)
             index = 0
         index +=1
     #print(y1)
