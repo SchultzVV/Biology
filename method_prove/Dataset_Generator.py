@@ -71,6 +71,7 @@ def Dataset(n_batch, batch_size, exemplos_por_batch):
     #inp = np.array(inp).reshape(n_batch, batch_size, exemplos_por_batch)
     inp = torch.as_tensor(inp)
     out = torch.as_tensor(out)
+    XC = torch.as_tensor(XC)
     #question = torch.as_tensor(question)
     #print('shape(question) =', np.shape(question))
     print('XC =', np.shape(XC))
