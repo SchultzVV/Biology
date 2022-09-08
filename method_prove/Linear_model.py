@@ -2,7 +2,6 @@ import torch.nn as nn
 
 class Linear(nn.Module):
     def __init__(self):
-        # N, 50
         super().__init__()
         self.f1 = nn.Sequential(
             nn.Linear(1, 200),
