@@ -45,7 +45,7 @@ def Dataset(n_batch, batch_size, exemplos_por_batch):
         position = []
         full = 0
         while full != batch_size:
-            xc = rd.randint(1, exemplos_por_batch-1)
+            xc = rd.randint(30, exemplos_por_batch-31)
             BB = rd.randint(0, exemplos_por_batch-1)
             b = B[BB]
             XC.append(xc)
@@ -69,15 +69,16 @@ def Dataset(n_batch, batch_size, exemplos_por_batch):
     #plt.show()
     XC = np.array(XC).reshape(n_batch, batch_size, 1)
     #inp = np.array(inp).reshape(n_batch, batch_size, exemplos_por_batch)
-    inp = torch.as_tensor(inp)
-    out = torch.as_tensor(out)
-    XC = torch.as_tensor(XC)
+    #inp = torch.as_tensor(inp)
+    #out = torch.as_tensor(out)
+    #XC = torch.as_tensor(XC)
     #question = torch.as_tensor(question)
     #print('shape(question) =', np.shape(question))
-    print('XC =', np.shape(XC))
-    print('inp =', np.shape(inp),'{} conjunto(s)'.format(n_batch)+' de {} exemplos'.format(batch_size)+', cada um com {} pontos '.format(exemplos_por_batch))
+    #print('XC =', np.shape(XC))
+    #print('inp =', np.shape(inp),'{} conjunto(s)'.format(n_batch)+' de {} exemplos'.format(batch_size)+', cada um com {} pontos '.format(exemplos_por_batch))
     
-    print('out =', np.shape(out))
+    #print('out =', np.shape(out))
+    return out,inp,XC
     #sys.exit()
     #address = open("inp", "wb")
     #pickle.dump(inp, address)
@@ -88,5 +89,35 @@ def Dataset(n_batch, batch_size, exemplos_por_batch):
     #address = open("XC", "wb")
     #pickle.dump(XC, address)
     #address.close()
-Dataset(5,10,200)
+
+def gen_sinthetic_dataset():
+    inp,out,XC = Dataset(5,10,200)
+    out = np.array(out).reshape(50,200)
+    inp = np.array(inp).reshape(50,200)
+    XC = np.array(XC).reshape(50,1)
+    Input = []
+    Output = []
+    Input_Test = []
+    Output_Test = []
+
+    for i in range(len(XC)):
+        y1 = inp[i][XC[i].item()-30:XC[i].item()]
+        Input.append(y1)
+        Output.append(0)
+
+        y2 = inp[i][XC[i].item():XC[i].item()+30]
+        Input.append(y2)
+        Output.append(1)
+    Input = np.reshape(Input, (5, 20, 30))
+    Output = np.reshape(Output, (5, 20, 1))
+    Input = torch.as_tensor(Input)
+    Output = torch.as_tensor(Output)
+    address = open("Input_Train_simulated", "wb")
+    pickle.dump(Input, address)
+    address.close()
+    address = open("Train_Labels_simulated", "wb")
+    pickle.dump(Output, address)
+    address.close()
+    return Input, Output
+
 
